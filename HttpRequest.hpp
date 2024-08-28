@@ -81,6 +81,12 @@ public:
         return it != cookieMap.end() ? it->second : "";
     }
 
+    // 设置查询参数
+    void setQueryParametersMultiple(std::map<std::string, std::vector<std::string>>& queryParameterss)
+    {
+        queryParameters = queryParameterss;
+    }
+
     // 获取查询参数
     std::vector<std::string> getQueryParametersMultiple(const std::string &name)
     {
@@ -101,7 +107,6 @@ public:
             {
                 parsePostParameters();
             }
-
             auto it = postParameters.find(name);
             return it != postParameters.end() ? it->second : std::vector<std::string>();
         }
@@ -256,6 +261,10 @@ public:
 
     std::string& getMethod(){
         return method;
+    }
+
+    std::string& getBody(){
+        return body;
     }
 
 private:

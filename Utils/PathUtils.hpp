@@ -1,11 +1,13 @@
 #include <string>
 #include <regex>
 #include <iostream>
+#include <map>
+#include <vector>
 
 class AntMatcher
 {
 public:
-    static bool match(std::string &pattern, std::string &path)
+    static bool match(const std::string &pattern, const std::string &path, std::map<std::string, std::vector<std::string>> &queryParameters)
     {
         size_t startPattern = 0;
         size_t startPath = 0;
@@ -28,13 +30,18 @@ public:
                 }
 
                 std::string param = patternSegment.substr(1, endBrace - 1);
-                std::string paramRegex = "[^/]+";
+                std::string paramName, paramRegex = "[^/]+";
 
                 // 检查是否有正则部分
                 int colonPos = param.find(':');
                 if (colonPos != std::string::npos)
                 {
+                    paramName = param.substr(0, colonPos);
                     paramRegex = param.substr(colonPos + 1);
+                }
+                else
+                {
+                    paramName = param;
                 }
 
                 // 使用正则表达式匹配路径段
@@ -43,6 +50,9 @@ public:
                 {
                     return false; // 匹配失败
                 }
+
+                // 将匹配的变量和对应值存入 map
+                queryParameters[paramName].push_back(pathSegment);
             }
             else
             {
