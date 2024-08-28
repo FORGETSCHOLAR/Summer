@@ -32,9 +32,7 @@ public:
     }
 
     void handleRead() {
-        logger->debug("receiver 为空");
         if (receiver_) {
-            logger->debug("receiver 不为空");
             receiver_->handle(this);
         }
     }

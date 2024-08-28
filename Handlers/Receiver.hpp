@@ -33,19 +33,22 @@ public:
         // 2 然后将request报文给另一个组件，比如是专门处理请求的线程池,这里暂时就在这里
         HttpRequest httpRequest = HttpRequest{};
         httpRequest.parse(parsedHttpRequest);
+        logger->info("解析请求成功: %s", httpRequest.getUri().c_str());
+
         HttpResponse httpResponse = HttpResponse{};
         router_.route(httpRequest, httpResponse);
 
         // 3 序列化响应
         std::string parsedHttpResponse;
         parsedHttpResponse = httpResponse.toString();
-        logger->info("parsedHttpResponse完成");
+        logger->info("序列化响应完成");
+        
 
         // 4 先尝试写回
         if (!parsedHttpResponse.empty())
         {
             conn->outbuffer_ += parsedHttpResponse;
-            conn->handleWrite();
+            conn->handleWrite();      
         }
     }
 

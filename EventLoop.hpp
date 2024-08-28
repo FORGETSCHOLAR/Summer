@@ -30,9 +30,8 @@ public:
 
     void loopOnce(int timeout)
     {
-        logger->info("EventLoop::LoopOnce");
         int n = epoller_.Wait(revs_, 128, timeout);
-        logger->info("LoopOnce::%d", n);
+        // logger->info("LoopOnce::%d", n);
 
         for (int i = 0; i < n; i++)
         {
@@ -41,11 +40,9 @@ public:
             if ((events & EPOLLHUP) || (events & EPOLLERR))
                 events |= (EPOLLIN | EPOLLOUT);
             if ((events & EPOLLIN) && ConnIsExist(fd)){
-                logger->info("fd %d 读事件就绪", fd);
                 connections_[fd]->handleRead();
             }
             if ((events & EPOLLOUT) && ConnIsExist(fd)){
-                logger->info("fd %d 写事件就绪", fd);
                 connections_[fd]->handleWrite();
             }
         }

@@ -9,7 +9,6 @@
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 
-
 class Route
 {
 public:
@@ -32,12 +31,34 @@ public:
     {
         handler_(request, response);
     }
+
 private:
     std::regex convertToRegex(const std::string &pattern) const
     {
-        std::string regexStr = "^" + pattern + "$";
-        regexStr = std::regex_replace(regexStr, std::regex("\\{([^\\}:]+)\\}"), "(?<$1>[^/]+)");
-        regexStr = std::regex_replace(regexStr, std::regex("\\{([^\\}:]+):([^\\}]+)\\}"), "(?<$1>$2)");
+        std::string regexStr = "^";
+        std::regex tokenRegex("\\{([^\\}:]+)(?::([^\\}]+))?\\}");
+        auto tokens_begin = std::sregex_iterator(pattern.begin(), pattern.end(), tokenRegex);
+        auto tokens_end = std::sregex_iterator();
+
+        size_t lastPos = 0;
+        for (std::sregex_iterator i = tokens_begin; i != tokens_end; ++i)
+        {
+            std::smatch match = *i;
+            // 添加之前的静态部分
+            regexStr += std::regex_replace(pattern.substr(lastPos, match.position() - lastPos), std::regex("([/\\^$.|?*+()])"), "\\$1");
+            lastPos = match.position() + match.length();
+
+            std::string paramName = match[1].str();
+            std::string paramRegex = match[2].str().empty() ? "[^/]+" : match[2].str();
+
+            // 构建带命名捕获组的正则表达式
+            regexStr += "(?P<" + paramName + ">" + paramRegex + ")";
+        }
+
+        // 添加剩余的静态部分
+        regexStr += std::regex_replace(pattern.substr(lastPos), std::regex("([/\\^$.|?*+()])"), "\\$1");
+        regexStr += "$";
+
         return std::regex(regexStr);
     }
 
@@ -48,14 +69,12 @@ private:
             params[match[i].str()] = match.str(i);
         }
     }
+
 private:
     std::string pattern_;
     std::function<void(HttpRequest &, HttpResponse &)> handler_;
     std::regex regexPattern_;
-
 };
-
-
 
 class Router
 {

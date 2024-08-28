@@ -19,7 +19,7 @@ public:
         connections_.erase(conn->fd_);
         close(conn->fd_);
         delete conn;
-        logger->info("Exceptor::正在断开一个请求 %d", fd);
+        logger->info("Exceptor::成功断开一个请求 fd = %d", fd);
     }
 private:
     Epoller &epoller_;

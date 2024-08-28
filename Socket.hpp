@@ -83,7 +83,6 @@ public:
         {
             logger->error("Accept error: %d - %s", errno, strerror(errno));
             throw AcceptException(errno, strerror(errno)); 
-            return -1;
         }
 
         *clientip = inet_ntoa(temp.sin_addr);

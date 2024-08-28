@@ -39,7 +39,6 @@ public:
         listenSock_.Listen();
 
         epoller_.Create();
-        logger->info("EPOLLIN | EPOLLET为 %d", EPOLLIN | EPOLLET);
 
         
         receiver_ = std::make_shared<Receiver>(router_);
@@ -58,13 +57,14 @@ public:
     }
 
     void addRoute(const std::string &pattern, std::function<void(HttpRequest &, HttpResponse &)> handler){
+        logger->info("注册路由: pattern %s", pattern.c_str());
         router_.addRoute(pattern, handler);
     }
 
 protected:
     void AddConnection(int fd, uint32_t events, const std::string &ip = "127.0.0.1", const uint16_t &port = DEFAULT_PORT)
     {
-        logger->info("AddConnection fd:{%d} events:{%d}",fd,events);
+
         // 1 先判断是不是ET模式，如果是ET，则要设置为非阻塞
         if (events & EPOLLET)
         {
@@ -82,7 +82,6 @@ protected:
         connections_.insert({fd, conn});
 
         // 3 写入内核
-        logger->info("写入内核 fd:{%d} events:{%d}",fd, conn->events_);
         epoller_.AddModEvent(fd, conn->events_, EPOLL_CTL_ADD);
     }
 

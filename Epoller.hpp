@@ -46,12 +46,10 @@ public:
         int n = epoll_ctl(epfd_, op, fd, &ev);
         if (n < 0)
         {
-            logger->fatal("edfd:{%d} op:{%d} fd:{%d}, events:{%d}",epfd_,op,fd,events);
+
             logger->fatal("epoll_ctl error: %d - %s", errno, strerror(errno));
             return false;
         }
-
-        logger->info("Event %s on fd %d was successfully added/modified.", op == EPOLL_CTL_ADD ? "added" : "modified", fd);
         return true;
     }
 
