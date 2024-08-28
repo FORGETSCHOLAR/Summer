@@ -48,7 +48,7 @@ public:
         //不小心把epoll的fd写入了内核，触发22错误
         AddConnection(listenSock_.Fd(), EPOLLIN | EPOLLET);
 
-        eventLoop_ = std::make_shared<EventLoop>(receiver_, sender_, excepter_, acceptor_, epoller_, listenSock_, connections_, revs_);
+        eventLoop_ = std::make_shared<EventLoop>(epoller_,connections_, revs_);
     }
 
     void startServer(int timeout)

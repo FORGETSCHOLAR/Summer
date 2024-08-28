@@ -20,8 +20,9 @@ public:
                 conn->outbuffer_.erase(0, size);
                 if (conn->outbuffer_.empty())
                 {
-                    logger->info("Sender::消息已全部发完");
-                    break;
+                    logger->info("Sender::消息已全部发完 即将断开连接");
+                    conn->handleException();
+                    return;
                 }
             }
             else
